@@ -1,5 +1,6 @@
 #include "snake_game.h"
 #include "common.h"
+#include "level.h"
 
 namespace snaze {
 
@@ -12,7 +13,11 @@ SnakeGame::SnakeGame(RunningOpt& opt)
 
     m_curr_foods = 0;
     m_score = 0;
+}
 
+void SnakeGame::initialize(const vector<vector<char>> &maze)
+{
+    m_level = Level(maze);
     m_system_msg = "Press <ENTER> to start the game!";
 }
 
@@ -22,6 +27,7 @@ void SnakeGame::render()
     display_game_info();
     display_system_messages();
     display_match_info();
+    cout << m_level.to_string();
 }
 
 void SnakeGame::display_welcome() const 

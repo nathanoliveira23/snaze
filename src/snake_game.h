@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "common.h"
+#include "level.h"
 
 using std::string;
 using std::vector;
@@ -17,13 +18,22 @@ class SnakeGame {
 public:
     using count_t = unsigned;
 
+    enum class state_e : short {
+        STARTING = 0,
+        WELLCOME,
+        RUNNING,
+        ENDING,
+    };
+
+    SnakeGame() = default;
     SnakeGame(RunningOpt &);
     ~SnakeGame() = default;
 
-    void initialize();
+    void initialize(const std::vector<std::vector<char>>&);
     void process_events();
     void update();
     void render();
+    bool game_over();
 
 private:
     void display_welcome() const;
@@ -34,6 +44,7 @@ private:
 
     void read_enter() const;
 
+    Level m_level;
     string m_system_msg;
 
     count_t m_score;

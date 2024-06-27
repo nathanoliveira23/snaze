@@ -5,13 +5,13 @@
 
 namespace snaze {
 
-typedef struct Position {
+struct Position {
     size_t row, col;
 
     Position(size_t r = 0, size_t c = 0) : row(r), col(c) { /* empty */}
-}
-coord_t;
+};
 
+} //NAMESPACE SNAZE
 
 enum player_e {
     RANDOM = 0,
@@ -24,7 +24,5 @@ struct RunningOpt {
     unsigned foods = 10;    //!< Default # of food pellets for the entire simulation.
     player_e player_type = player_e::BACKTRACKING; //!< Default player type.
 };
-
-} //NAMESPACE SNAZE
 
 #endif
