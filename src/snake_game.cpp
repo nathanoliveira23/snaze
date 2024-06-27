@@ -1,8 +1,11 @@
 #include "snake_game.h"
+#include "cell.h"
 #include "common.h"
-#include "level.h"
+#include <cstdio>
 
 namespace snaze {
+
+static size_t current_pos = 0;
 
 SnakeGame::SnakeGame(RunningOpt& opt)
 {
@@ -18,16 +21,57 @@ SnakeGame::SnakeGame(RunningOpt& opt)
 void SnakeGame::initialize(const vector<vector<char>> &maze)
 {
     m_level = Level(maze);
+    m_player = Player(m_level);
+    m_level.add_food();
+    m_game_state = state_e::STARTING;
+
     m_system_msg = "Press <ENTER> to start the game!";
+}
+
+void SnakeGame::process_events()
+{
+    if (m_game_state == state_e::WELLCOME) {
+        read_enter();
+    }
+}
+
+void SnakeGame::update() 
+{
+    if (m_game_state == state_e::STARTING) {
+        m_game_state = state_e::WELLCOME;
+    }
+    else if (m_game_state == state_e::WELLCOME) {
+        m_game_state = state_e::RUNNING;
+    }
+    else if (m_game_state == state_e::RUNNING) {
+        if (m_player.find_solution(m_level.spawn(), m_level.food())) {
+            vector<Position> path = m_player.path_to_food();
+            Position pos = path[current_pos];
+
+            if (current_pos < path.size()) {
+                m_level.set_cell(pos, Cell::cell_e::SPAWN);
+                current_pos++;
+            }
+            else {
+                cout << "cabou\n";
+                current_pos = 0;
+            }
+        }
+    }
 }
 
 void SnakeGame::render()
 {
-    display_welcome();
-    display_game_info();
-    display_system_messages();
-    display_match_info();
-    cout << m_level.to_string();
+    if (m_game_state == state_e::WELLCOME) {
+        display_welcome();
+        display_game_info();
+        display_system_messages();
+        display_match_info();
+        cout << m_level.to_string();
+    }
+    else if (m_game_state == state_e::RUNNING) {
+        cout << m_level.to_string();
+    }
 }
 
 void SnakeGame::display_welcome() const 
@@ -62,6 +106,14 @@ void SnakeGame::display_match_info()
          << endl;
 
     draw_horizontal_line();
+}
+
+void SnakeGame::read_enter() const
+{
+    char enter;
+
+    while (enter != '\n')
+        enter = getchar();
 }
 
 void SnakeGame::draw_horizontal_line() const 

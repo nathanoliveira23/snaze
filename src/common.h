@@ -2,6 +2,7 @@
 #define COMMON_H
 
 #include <cstddef>
+#include <sstream>
 
 namespace snaze {
 
@@ -9,6 +10,17 @@ struct Position {
     size_t row, col;
 
     Position(size_t r = 0, size_t c = 0) : row(r), col(c) { /* empty */}
+
+    bool operator==(const Position &other) const {
+        return row == other.row and col == other.col;
+    }
+
+    std::string to_str() const {
+        std::ostringstream os;
+        os << "(" << row << ", " << col << ")";
+
+        return os.str();
+    }
 };
 
 } //NAMESPACE SNAZE

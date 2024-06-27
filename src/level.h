@@ -13,6 +13,8 @@ namespace snaze {
 
 class Level {
 public:
+    enum dir_e { UP = 0, LEFT, DOWN, RIGHT };
+
     template<typename Key, typename Value>
     using unmap = std::unordered_map<Key, Value>;
     using maze_t = std::vector<std::vector<Cell>>;
@@ -24,18 +26,28 @@ public:
 
     coord_t rows() const { return m_rows; }
     coord_t cols() const { return m_cols; }
+    maze_t maze() const { return m_maze; }
+
+    void set_cell(Position &, Cell::cell_e);
     
     Position spawn() const { return m_snake_spawn; }
+    Position food() const { return m_food_pos; }
+    void add_food();
+    bool is_blocked(const Position &, dir_e) const;
+    bool is_blocked(const Position &) const;
+    Position move_to(const Position &, dir_e) const;
 
     std::string to_string() const;
 
 private:
+    Position choose_position() const;
     coord_t m_rows;
     coord_t m_cols;
     maze_t m_maze;
     Position m_snake_spawn;
+    Position m_food_pos;
 };
 
-} // NAMESPACE Snake
+} // NAMESPACE SNAZE
 
 #endif

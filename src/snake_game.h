@@ -7,6 +7,7 @@
 
 #include "common.h"
 #include "level.h"
+#include "player.h"
 
 using std::string;
 using std::vector;
@@ -44,7 +45,10 @@ private:
 
     void read_enter() const;
 
+    state_e m_game_state;
+
     Level m_level;
+    Player m_player;
     string m_system_msg;
 
     count_t m_score;

@@ -1,9 +1,9 @@
+#include <cstddef>
+#include <random>
 #include <sstream>
-#include <iostream>
-#include <stdexcept>
-#include <iomanip>
-
 #include "level.h"
+#include "cell.h"
+#include "common.h"
 
 namespace snaze {
 
@@ -34,6 +34,80 @@ Level::Level(const std::vector<std::vector<char>> &input)
 
         m_maze.push_back(buff);
     }
+}
+
+bool Level::is_blocked(const Position &pos, dir_e dir) const
+{
+    switch (dir) {
+        case UP:
+            return pos.row > 0 and
+                (m_maze[pos.row - 1][pos.col].type() == Cell::cell_e::WALL);
+        case DOWN:
+            return pos.row < m_rows and
+                (m_maze[pos.row + 1][pos.col].type() == Cell::cell_e::WALL);
+        case LEFT:
+            return pos.col > 0 and
+                (m_maze[pos.row][pos.col - 1].type() == Cell::cell_e::WALL);
+        case RIGHT:
+            return pos.col < m_cols and
+                (m_maze[pos.row][pos.col + 1].type() == Cell::cell_e::WALL);
+    }
+
+    return false;
+}
+
+bool Level::is_blocked(const Position &pos) const
+{
+    if (pos.row > 0 and pos.row < rows() and pos.col > 0 and pos.col < cols()) {
+        return m_maze[pos.row][pos.col].type() != Cell::cell_e::FREE;
+    }
+
+    return true;
+}
+
+Position Level::move_to(const Position &pos, dir_e dir) const
+{
+    size_t r = pos.row, 
+           c = pos.col;
+
+    switch (dir) {
+        case UP:    return Position(r - 1, c);
+        case DOWN:  return Position(r + 1, c);
+        case LEFT:  return Position(r, c - 1);
+        case RIGHT: return Position(r, c + 1);
+    }
+}
+
+void Level::add_food()
+{
+    Position spawn_food = choose_position();
+
+    if (is_blocked(spawn_food)) {
+        add_food();
+    }
+    else {
+        m_maze[spawn_food.row][spawn_food.col] = Cell::cell_e::FOOD;
+        m_food_pos = spawn_food;
+    }
+
+}
+
+Position Level::choose_position() const
+{
+    std::random_device rd;
+    std::mt19937 rng(rd());
+
+    std::uniform_int_distribution<size_t> random_row(0, rows());
+    std::uniform_int_distribution<size_t> random_col(0, cols());
+
+    return Position(random_row(rng), random_col(rng));
+}
+
+void Level::set_cell(Position &pos, Cell::cell_e cell_type) {
+
+    //Cell &cell = m_maze[pos.row][pos.col];
+    //cell.type(cell_type);
+    m_maze[pos.row][pos.col].type(cell_type);
 }
 
 std::string Level::to_string() const
