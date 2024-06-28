@@ -1,11 +1,18 @@
-#include "snake_game.h"
-#include "cell.h"
-#include "common.h"
 #include <cstdio>
+#include <unordered_map>
+#include "snake_game.h"
+#include "common.h"
+#include "player.h"
 
 namespace snaze {
 
-static size_t current_pos = 0;
+std::unordered_map<dir_e, string> direct {
+    { UP, "CIMA" },
+    { DOWN, "BAIXO" },
+    { LEFT, "ESQUERDA" },
+    { RIGHT, "DIREITA" },
+};
+
 
 SnakeGame::SnakeGame(RunningOpt& opt)
 {
@@ -22,8 +29,9 @@ void SnakeGame::initialize(const vector<vector<char>> &maze)
 {
     m_level = Level(maze);
     m_player = Player(m_level);
-    m_level.add_food();
     m_game_state = state_e::STARTING;
+
+    m_curr_foods = 0;
 
     m_system_msg = "Press <ENTER> to start the game!";
 }
@@ -42,19 +50,60 @@ void SnakeGame::update()
     }
     else if (m_game_state == state_e::WELLCOME) {
         m_game_state = state_e::RUNNING;
+        m_match_state = match_e::STARTING;
     }
     else if (m_game_state == state_e::RUNNING) {
-        if (m_player.find_solution(m_level.spawn(), m_level.food())) {
-            vector<Position> path = m_player.path_to_food();
-            Position pos = path[current_pos];
+        if (m_match_state == match_e::STARTING) {
+            m_level.add_food();
+            m_level.insert_snake(m_level.spawn());
 
-            if (current_pos < path.size()) {
-                m_level.set_cell(pos, Cell::cell_e::SPAWN);
-                current_pos++;
+            m_player = Player(m_level);
+
+            bool has_solution = m_player.find_solution(m_level.spawn(), m_level.food());
+
+            if (has_solution) {
+                auto path = m_player.path_to_food();
+                auto dirs = m_player.directions();
+
+                for (const auto &p : path) m_paths.push(p);
+
+                for (const auto &d : dirs) m_dirs.push(d);
+
+                m_match_state = match_e::LOOKING_FOR_FOOD;
             }
-            else {
-                cout << "cabou\n";
-                current_pos = 0;
+        }
+        else if (m_match_state == match_e::LOOKING_FOR_FOOD) {
+            if (not m_paths.empty()) {
+                auto pos = m_paths.front();
+                m_paths.pop();
+
+                bool ate_food = false;
+
+                if (pos == m_level.food()) {
+                    m_level.spawn(pos);
+
+                    while (not m_paths.empty())
+                        m_paths.pop();
+
+                    while (not m_dirs.empty())
+                        m_dirs.pop();
+
+                    ate_food = true;
+
+                    m_level.update(pos, m_dirs.back(), ate_food);
+
+                    m_curr_foods++;
+                    m_match_state = match_e::STARTING;
+
+                    return;
+                }
+
+                if (not m_dirs.empty()) {
+                    auto dir = m_dirs.front();
+                    m_dirs.pop();
+                    
+                    m_level.update(pos, dir, ate_food);
+                }
             }
         }
     }
@@ -70,7 +119,10 @@ void SnakeGame::render()
         cout << m_level.to_string();
     }
     else if (m_game_state == state_e::RUNNING) {
-        cout << m_level.to_string();
+        display_match_info();
+        if (m_match_state == match_e::LOOKING_FOR_FOOD) {
+            cout << m_level.to_string();
+        }
     }
 }
 

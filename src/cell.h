@@ -1,6 +1,7 @@
 #ifndef CELL_H
 #define CELL_H
 
+#include "snake.h"
 namespace snaze {
 
 class Cell {

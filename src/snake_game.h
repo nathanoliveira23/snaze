@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <queue>
 
 #include "common.h"
 #include "level.h"
@@ -11,6 +12,8 @@
 
 using std::string;
 using std::vector;
+using std::pair;
+using std::queue;
 using std::cout, std::endl;
 
 namespace snaze {
@@ -24,6 +27,13 @@ public:
         WELLCOME,
         RUNNING,
         ENDING,
+    };
+
+    enum class match_e : short {
+        STARTING = 0,
+        FOUND_FOOD,
+        LOOKING_FOR_FOOD,
+        GAME_OVER,
     };
 
     SnakeGame() = default;
@@ -46,10 +56,14 @@ private:
     void read_enter() const;
 
     state_e m_game_state;
+    match_e m_match_state;
 
     Level m_level;
     Player m_player;
     string m_system_msg;
+
+    queue<Position> m_paths;
+    queue<dir_e> m_dirs;
 
     count_t m_score;
     count_t m_n_levels;

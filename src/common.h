@@ -23,6 +23,8 @@ struct Position {
     }
 };
 
+enum dir_e { UP = 0, LEFT, DOWN, RIGHT };
+
 } //NAMESPACE SNAZE
 
 enum player_e {
