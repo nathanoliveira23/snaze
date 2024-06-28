@@ -200,7 +200,7 @@ std::string Level::to_string() const
             } else if (cell.type() == Cell::cell_e::FOOD) {
                 oss << "";
             } else if (cell.type() == Cell::cell_e::SPAWN) {
-                oss << "&";
+                oss << "󱔎";
             } else if (cell.type() == Cell::cell_e::SNAKE_HEAD) {
                 oss << "";
             } else if (cell.type() == Cell::cell_e::SNAKE_BODY) {
