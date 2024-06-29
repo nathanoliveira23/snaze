@@ -54,8 +54,8 @@ int main(int argc, char* argv[])
         game.update();
         //system("clear");
         game.render();
-        //usleep(70000);
-        sleep(1);
+        usleep(70000);
+        //sleep(1);
     }
 
     return EXIT_SUCCESS;

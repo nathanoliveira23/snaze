@@ -5,6 +5,7 @@
 #include "level.h"
 #include "cell.h"
 #include "common.h"
+#include "snake.h"
 
 using std::cout, std::endl;
 
@@ -17,7 +18,6 @@ Level::Level(const std::vector<std::vector<char>> &input)
         { '.', Cell::cell_e::INV_WALL },
         { ' ', Cell::cell_e::FREE },
         { '&', Cell::cell_e::SPAWN },
-        { 'B', Cell::cell_e::SNAKE_BODY },
     };
 
     m_rows = input.size();
@@ -93,6 +93,23 @@ void Level::update(const Position &pos, dir_e direction, bool ate_food)
         }
         else {
             fill(next, Cell::cell_e::SNAKE_HEAD);
+        }
+    }
+}
+
+void Level::reset()
+{
+    m_snake = Snake(Position(m_snake_spawn));
+    fill(m_food_pos, Cell::cell_e::FREE);
+
+    for (coord_t r = 0; r < rows(); ++r) {
+        for (coord_t c = 0; c < cols(); ++c) {
+            Cell &cell = m_maze[r][c];
+
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD or cell.type() == Cell::cell_e::SNAKE_BODY) {
+                Position pos = Position(r, c);
+                fill(pos, Cell::cell_e::FREE);
+            }
         }
     }
 }

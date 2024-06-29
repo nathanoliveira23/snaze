@@ -30,6 +30,7 @@ public:
     void fill(const Position &, Cell::cell_e);
     void insert_snake(const Position &);
     void update(const Position &, dir_e, bool);
+    void reset();
     
     Position spawn() const { return m_snake_spawn; }
     void spawn(const Position &);

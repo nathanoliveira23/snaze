@@ -38,7 +38,7 @@ void SnakeGame::initialize(const vector<vector<char>> &maze)
 
 void SnakeGame::process_events()
 {
-    if (m_game_state == state_e::WELLCOME) {
+    if (m_game_state == state_e::WELLCOME or m_match_state == match_e::RESET) {
         read_enter();
     }
 }
@@ -61,50 +61,51 @@ void SnakeGame::update()
 
             bool has_solution = m_player.find_solution(m_level.spawn(), m_level.food());
 
-            if (has_solution) {
-                auto path = m_player.path_to_food();
-                auto dirs = m_player.directions();
-
-                for (const auto &p : path) m_paths.push(p);
-
-                for (const auto &d : dirs) m_dirs.push(d);
-
-                m_match_state = match_e::LOOKING_FOR_FOOD;
-            }
+            m_match_state = has_solution ? match_e::LOOKING_FOR_FOOD
+                                         : match_e::WALK_TO_DEATH;
         }
         else if (m_match_state == match_e::LOOKING_FOR_FOOD) {
-            if (not m_paths.empty()) {
-                auto pos = m_paths.front();
-                m_paths.pop();
+            auto [step, direction] = m_player.next_move();
+            bool found_food = step == m_level.food();
 
-                bool ate_food = false;
+            cout << step.to_str() << endl;
+            cout << direct[direction] << endl;
 
-                if (pos == m_level.food()) {
-                    m_level.spawn(pos);
+            m_level.update(step, direction, found_food);
 
-                    while (not m_paths.empty())
-                        m_paths.pop();
+            if (found_food) {
+                bool death = true;
 
-                    while (not m_dirs.empty())
-                        m_dirs.pop();
+                for (const dir_e dir : { UP, LEFT, DOWN, RIGHT })
+                    if (not m_level.is_blocked(step, dir))
+                        death = false;
 
-                    ate_food = true;
+                m_level.spawn(step);
+                m_curr_foods++;
 
-                    m_level.update(pos, m_dirs.back(), ate_food);
-
-                    m_curr_foods++;
-                    m_match_state = match_e::STARTING;
-
-                    return;
-                }
-
-                if (not m_dirs.empty()) {
-                    auto dir = m_dirs.front();
-                    m_dirs.pop();
-                    
-                    m_level.update(pos, dir, ate_food);
-                }
+                m_match_state = death ? match_e::RESET
+                                      : match_e::STARTING;
             }
+        }
+        else if (m_match_state == match_e::WALK_TO_DEATH) {
+            cout << m_player.amount_of_steps() << " -> ";
+
+            if (m_player.amount_of_steps() == 0) {
+                m_lives -= 1;
+                m_system_msg = "Press <ENTER> to try again.";
+                m_match_state = match_e::RESET;
+                
+                return;
+            }
+            
+            auto [step, direction] = m_player.next_move();
+
+            m_level.update(step, direction, false);
+            m_level.spawn(m_player.last_move());
+        }
+        else if (m_match_state == match_e::RESET) {
+            m_level.reset();
+            m_match_state = match_e::STARTING;
         }
     }
 }
@@ -122,6 +123,15 @@ void SnakeGame::render()
         display_match_info();
         if (m_match_state == match_e::LOOKING_FOR_FOOD) {
             cout << m_level.to_string();
+        }
+        else if (m_match_state == match_e::WALK_TO_DEATH) {
+            cout << m_level.to_string();
+        }
+        else if (m_match_state == match_e::RESET) {
+            display_system_messages();
+        }
+        else if (m_match_state == match_e::GAME_OVER) {
+            exit(1);
         }
     }
 }

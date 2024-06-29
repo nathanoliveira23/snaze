@@ -32,7 +32,9 @@ public:
     enum class match_e : short {
         STARTING = 0,
         FOUND_FOOD,
+        WALK_TO_DEATH,
         LOOKING_FOR_FOOD,
+        RESET,
         GAME_OVER,
     };
 
@@ -61,9 +63,6 @@ private:
     Level m_level;
     Player m_player;
     string m_system_msg;
-
-    queue<Position> m_paths;
-    queue<dir_e> m_dirs;
 
     count_t m_score;
     count_t m_n_levels;
