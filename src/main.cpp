@@ -46,16 +46,15 @@ int main(int argc, char* argv[])
 
     int read = read_file(argv[1], level);
 
-    snaze::SnakeGame game(runOpt);
-    game.initialize(level);
+    snaze::SnakeGame snaze(runOpt);
+    snaze.initialize(level);
 
-    while (not game.game_over()) {
-        game.process_events();
-        game.update();
-        //system("clear");
-        game.render();
+    while (not snaze.game_over()) {
+        snaze.process_events();
+        snaze.update();
+        system("clear");
+        snaze.render();
         usleep(70000);
-        //sleep(1);
     }
 
     return EXIT_SUCCESS;

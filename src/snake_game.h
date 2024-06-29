@@ -55,6 +55,7 @@ private:
     void display_match_info();
     void display_system_messages() const;
     void draw_horizontal_line() const;
+    void display_life(count_t);
 
     void read_enter() const;
 
@@ -74,6 +75,7 @@ private:
     count_t m_total_foods;
     count_t m_curr_foods;
     count_t m_lives;
+    count_t m_curr_lives;
     player_e m_player_type;
 };
 

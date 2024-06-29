@@ -3,6 +3,7 @@
 #include "snake_game.h"
 #include "common.h"
 #include "player.h"
+#include "snake.h"
 
 namespace snaze {
 
@@ -22,6 +23,7 @@ SnakeGame::SnakeGame(RunningOpt& opt)
     m_player_type = opt.player_type;
 
     m_curr_foods = 0;
+    m_curr_lives = m_lives;
     m_score = 0;
 }
 
@@ -69,9 +71,6 @@ void SnakeGame::update()
             auto [step, direction] = m_player.next_move();
             bool found_food = step == m_level.food();
 
-            cout << step.to_str() << endl;
-            cout << direct[direction] << endl;
-
             m_level.update(step, direction, found_food);
 
             if (found_food) {
@@ -106,7 +105,7 @@ void SnakeGame::update()
             if (m_player.amount_of_steps() == 0) {
                 m_score - 20 < 0 ? m_score = 0 
                                  : m_score -= 20;
-                m_lives -= 1;
+                m_curr_lives -= 1;
                 m_system_msg = "Press <ENTER> to try again.";
                 m_match_state = match_e::RESET;
             }
@@ -185,12 +184,31 @@ void SnakeGame::display_system_messages() const
 
 void SnakeGame::display_match_info()
 {
-    cout << "Lives: " << string(m_lives, 'O') << " | "
+    display_life(m_curr_lives);
+
+    cout <<  " | "
          << "Score: " << m_score << " | "
          << "Food eaten: " << m_curr_foods << " of " << m_total_foods 
          << endl;
 
     draw_horizontal_line();
+}
+
+void SnakeGame::display_life(count_t curr_lives) {
+    cout << "Lives: ";
+    if (curr_lives == m_lives) {
+        for (count_t i = 0; i < m_lives; i++) {
+            cout << "󰋑";
+        }
+    }
+    else {
+        for (count_t i = 0; i < curr_lives; i++) {
+            cout << "󰋑";
+        }
+        for (count_t i = 0; i < m_lives - curr_lives; i++) {
+            cout << "󰋕";
+        }
+    }
 }
 
 void SnakeGame::read_enter() const
