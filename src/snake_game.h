@@ -54,6 +54,7 @@ private:
     void display_game_info() const;
     void display_match_info();
     void display_system_messages() const;
+    void display_won_message() const;
     void draw_horizontal_line() const;
     void display_life(count_t);
 

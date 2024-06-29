@@ -1,8 +1,8 @@
 #include <cstddef>
 #include <random>
 #include <sstream>
-#include <iostream>
 #include "level.h"
+#include <iostream>
 #include "cell.h"
 #include "common.h"
 #include "snake.h"
@@ -10,6 +10,17 @@
 using std::cout, std::endl;
 
 namespace snaze {
+
+Level::unmap<Cell::cell_e, std::string> 
+Level::render = {
+    { Cell::cell_e::WALL, "█" },
+    { Cell::cell_e::INV_WALL, " " },
+    { Cell::cell_e::FREE, " " },
+    { Cell::cell_e::FOOD, "" },
+    { Cell::cell_e::SPAWN, "󱔎" },
+    { Cell::cell_e::SNAKE_HEAD, "" },
+    { Cell::cell_e::SNAKE_BODY, "" },
+};
 
 Level::Level(const std::vector<std::vector<char>> &input)
 {
@@ -179,7 +190,8 @@ void Level::add_food()
     }
 }
 
-void Level::spawn(const Position &new_spawn) {
+void Level::spawn(const Position &new_spawn) 
+{
     m_snake_spawn = new_spawn;
 }
 
@@ -207,22 +219,7 @@ std::string Level::to_string() const
     for (coord_t r = 0; r < rows(); ++r) {
         for (coord_t c = 0; c < cols(); ++c) {
             Cell cell = m_maze[r][c];
-
-            if (cell.type() == Cell::cell_e::WALL) {
-                oss << "█";
-            } else if (cell.type() == Cell::cell_e::INV_WALL) {
-                oss << ".";
-            } else if (cell.type() == Cell::cell_e::FREE) {
-                oss << " ";
-            } else if (cell.type() == Cell::cell_e::FOOD) {
-                oss << "";
-            } else if (cell.type() == Cell::cell_e::SPAWN) {
-                oss << "󱔎";
-            } else if (cell.type() == Cell::cell_e::SNAKE_HEAD) {
-                oss << "";
-            } else if (cell.type() == Cell::cell_e::SNAKE_BODY) {
-                oss << "";
-            } 
+            oss << Level::render[cell.type()];
         }
         oss << "\n";
     }

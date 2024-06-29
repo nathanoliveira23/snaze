@@ -1,7 +1,9 @@
 #include <cstdio>
 #include <unordered_map>
 #include "snake_game.h"
+#include "cell.h"
 #include "common.h"
+#include "level.h"
 #include "player.h"
 #include "snake.h"
 
@@ -139,10 +141,11 @@ void SnakeGame::render()
             cout << m_level.to_string();
         }
         else if (m_match_state == match_e::RESET) {
+            cout << m_level.to_string();
             display_system_messages();
         }
         else if (m_match_state == match_e::WIN) {
-            display_system_messages();
+            display_won_message();
         }
         else if (m_match_state == match_e::GAME_OVER) {
             exit(1);
@@ -208,6 +211,33 @@ void SnakeGame::display_life(count_t curr_lives) {
         for (count_t i = 0; i < m_lives - curr_lives; i++) {
             cout << "󰋕";
         }
+    }
+}
+
+void SnakeGame::display_won_message() const
+{
+    auto maze = m_level.maze();
+
+    for (size_t i = 0; i < (m_level.rows() / 2) - 2; i++) {
+        for (size_t j = 0; j < m_level.cols(); j++) {
+            Cell cell = maze[i][j];
+            cout << Level::render[cell.type()];
+        }
+
+        cout << endl;
+    }
+    cout << "+--------------------------------------------+\n";
+    cout << "|       CONGRATILATIONS anaconda WON!        |\n";
+    cout << "|            Thanks for playing!             |\n";
+    cout << "+--------------------------------------------+\n";
+
+    for (size_t i = (m_level.rows() / 2) + 2; i < m_level.rows(); i++) {
+        for (size_t j = 0; j < m_level.cols(); j++) {
+            Cell cell = maze[i][j];
+            cout << Level::render[cell.type()];
+        }
+
+        cout << endl;
     }
 }
 

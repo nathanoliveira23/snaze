@@ -23,6 +23,8 @@ public:
     Level(const std::vector<std::vector<char>> &);
     ~Level() = default;
 
+    static unmap<Cell::cell_e, std::string> render;
+
     coord_t rows() const { return m_rows; }
     coord_t cols() const { return m_cols; }
     maze_t maze() const { return m_maze; }
