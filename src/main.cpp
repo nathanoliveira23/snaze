@@ -49,7 +49,7 @@ int main(int argc, char* argv[])
     snaze::SnakeGame game(runOpt);
     game.initialize(level);
 
-    while (true) {
+    while (not game.game_over()) {
         game.process_events();
         game.update();
         //system("clear");

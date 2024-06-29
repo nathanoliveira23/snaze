@@ -32,6 +32,7 @@ void SnakeGame::initialize(const vector<vector<char>> &maze)
     m_game_state = state_e::STARTING;
 
     m_curr_foods = 0;
+    m_end_game = false; 
 
     m_system_msg = "Press <ENTER> to start the game!";
 }
@@ -82,31 +83,42 @@ void SnakeGame::update()
 
                 m_level.spawn(step);
                 m_curr_foods++;
+                m_score += 20;
 
                 m_match_state = death ? match_e::RESET
                                       : match_e::STARTING;
+
+                if (m_curr_foods == m_total_foods) {
+                    m_match_state = match_e::WIN;
+                    m_end_game = true;
+                    m_system_msg = "CONGRATILATIONS anaconda WON! Thanks for playing!";
+                }
             }
         }
         else if (m_match_state == match_e::WALK_TO_DEATH) {
-            cout << m_player.amount_of_steps() << " -> ";
+            auto [step, direction] = m_player.next_move();
+
+            if (not m_level.is_blocked(step, direction))
+                m_level.update(step, direction, false);
+
+            m_level.spawn(m_player.last_move());
 
             if (m_player.amount_of_steps() == 0) {
+                m_score - 20 < 0 ? m_score = 0 
+                                 : m_score -= 20;
                 m_lives -= 1;
                 m_system_msg = "Press <ENTER> to try again.";
                 m_match_state = match_e::RESET;
-                
-                return;
             }
             
-            auto [step, direction] = m_player.next_move();
-
-            m_level.update(step, direction, false);
-            m_level.spawn(m_player.last_move());
         }
         else if (m_match_state == match_e::RESET) {
             m_level.reset();
             m_match_state = match_e::STARTING;
         }
+    }
+    else if (m_match_state == match_e::WIN) {
+        m_game_state = state_e::ENDING;
     }
 }
 
@@ -130,10 +142,21 @@ void SnakeGame::render()
         else if (m_match_state == match_e::RESET) {
             display_system_messages();
         }
+        else if (m_match_state == match_e::WIN) {
+            display_system_messages();
+        }
         else if (m_match_state == match_e::GAME_OVER) {
             exit(1);
         }
     }
+    else if (m_game_state == state_e::ENDING) {
+        //
+    }
+}
+
+bool SnakeGame::game_over() const
+{
+    return m_end_game;
 }
 
 void SnakeGame::display_welcome() const 

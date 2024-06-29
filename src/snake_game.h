@@ -35,6 +35,7 @@ public:
         WALK_TO_DEATH,
         LOOKING_FOR_FOOD,
         RESET,
+        WIN,
         GAME_OVER,
     };
 
@@ -46,7 +47,7 @@ public:
     void process_events();
     void update();
     void render();
-    bool game_over();
+    bool game_over() const;
 
 private:
     void display_welcome() const;
@@ -63,6 +64,8 @@ private:
     Level m_level;
     Player m_player;
     string m_system_msg;
+
+    bool m_end_game;
 
     count_t m_score;
     count_t m_n_levels;
