@@ -141,7 +141,7 @@ void SnakeGame::render()
             cout << m_level.to_string();
         }
         else if (m_match_state == match_e::RESET) {
-            cout << m_level.to_string();
+            display_death_snake();
             display_system_messages();
         }
         else if (m_match_state == match_e::WIN) {
@@ -235,6 +235,29 @@ void SnakeGame::display_won_message() const
         for (size_t j = 0; j < m_level.cols(); j++) {
             Cell cell = maze[i][j];
             cout << Level::render[cell.type()];
+        }
+
+        cout << endl;
+    }
+}
+
+void SnakeGame::display_death_snake() const 
+{
+    auto maze = m_level.maze();
+    
+    for (size_t i = 0; i < m_level.rows(); i++) {
+        for (size_t j = 0; j < m_level.cols(); j++) {
+            Cell cell = maze[i][j];
+
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD) {
+                cout << Level::render[Cell::cell_e::DEATH_SNAKE_HEAD];
+            }
+            else if (cell.type() == Cell::cell_e::SNAKE_BODY) {
+                cout << Level::render[Cell::cell_e::DEATH_SNAKE_BODY];
+            }
+            else {
+                cout << Level::render[cell.type()];
+            }
         }
 
         cout << endl;

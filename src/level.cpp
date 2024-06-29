@@ -20,6 +20,8 @@ Level::render = {
     { Cell::cell_e::SPAWN, "󱔎" },
     { Cell::cell_e::SNAKE_HEAD, "" },
     { Cell::cell_e::SNAKE_BODY, "" },
+    { Cell::cell_e::DEATH_SNAKE_HEAD, "󰯈" },
+    { Cell::cell_e::DEATH_SNAKE_BODY, "." },
 };
 
 Level::Level(const std::vector<std::vector<char>> &input)

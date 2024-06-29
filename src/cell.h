@@ -14,6 +14,8 @@ public:
         SPAWN,
         SNAKE_HEAD,
         SNAKE_BODY,
+        DEATH_SNAKE_HEAD,
+        DEATH_SNAKE_BODY,
     };
 
     Cell() = default;
