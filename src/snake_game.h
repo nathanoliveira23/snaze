@@ -55,6 +55,7 @@ private:
     void display_match_info();
     void display_system_messages() const;
     void display_won_message() const;
+    void display_lost_message() const;
     void display_death_snake() const;
     void draw_horizontal_line() const;
     void display_life(count_t);

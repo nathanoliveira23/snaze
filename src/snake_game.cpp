@@ -86,13 +86,23 @@ void SnakeGame::update()
                 m_curr_foods++;
                 m_score += 20;
 
-                m_match_state = death ? match_e::RESET
-                                      : match_e::STARTING;
+                if (death) {
+                    m_curr_lives -= 1;
+                    if (m_curr_lives == 0) {
+                        m_end_game = true;
+                        m_match_state = match_e::GAME_OVER;
+                    }
+                    else {
+                        m_match_state = match_e::RESET;
+                    }
+                }
+                else {
+                    m_match_state = match_e::STARTING;
+                }
 
                 if (m_curr_foods == m_total_foods) {
                     m_match_state = match_e::WIN;
                     m_end_game = true;
-                    m_system_msg = "CONGRATILATIONS anaconda WON! Thanks for playing!";
                 }
             }
         }
@@ -111,7 +121,8 @@ void SnakeGame::update()
 
                 if (m_curr_lives == 0) {
                     m_end_game = true;
-                    m_system_msg = "Sorry! Anaconda LOST.";
+                    m_match_state = match_e::GAME_OVER;
+                    return;
                 }
                 else {
                     m_system_msg = "Press <ENTER> to try again.";
@@ -159,7 +170,7 @@ void SnakeGame::render()
             display_won_message();
         }
         else if (m_match_state == match_e::GAME_OVER) {
-            exit(1);
+            display_lost_message();
         }
     }
     else if (m_game_state == state_e::ENDING) {
@@ -211,17 +222,15 @@ void SnakeGame::display_match_info()
 void SnakeGame::display_life(count_t curr_lives) {
     cout << "Lives: ";
     if (curr_lives == m_lives) {
-        for (count_t i = 0; i < m_lives; i++) {
+        for (count_t i = 0; i < m_lives; i++)
             cout << "󰋑";
-        }
     }
     else {
-        for (count_t i = 0; i < curr_lives; i++) {
+        for (count_t i = 0; i < curr_lives; i++)
             cout << "󰋑";
-        }
-        for (count_t i = 0; i < m_lives - curr_lives; i++) {
+
+        for (count_t i = 0; i < m_lives - curr_lives; i++)
             cout << "󰋕";
-        }
     }
 }
 
@@ -246,6 +255,51 @@ void SnakeGame::display_won_message() const
         for (size_t j = 0; j < m_level.cols(); j++) {
             Cell cell = maze[i][j];
             cout << Level::render[cell.type()];
+        }
+
+        cout << endl;
+    }
+}
+
+void SnakeGame::display_lost_message() const
+{
+    auto maze = m_level.maze();
+
+    for (size_t i = 0; i < (m_level.rows() / 2) - 2; i++) {
+        for (size_t j = 0; j < m_level.cols(); j++) {
+            Cell cell = maze[i][j];
+
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD) {
+                cout << Level::render[Cell::cell_e::DEATH_SNAKE_HEAD];
+            }
+            else if (cell.type() == Cell::cell_e::SNAKE_BODY) {
+                cout << Level::render[Cell::cell_e::DEATH_SNAKE_BODY];
+            }
+            else {
+                cout << Level::render[cell.type()];
+            }
+        }
+
+        cout << endl;
+    }
+    cout << "+--------------------------------------------+\n";
+    cout << "|       Sorry, anaconda LOST the game!       |\n";
+    cout << "|            Try again next time!            |\n";
+    cout << "+--------------------------------------------+\n";
+
+    for (size_t i = (m_level.rows() / 2) + 2; i < m_level.rows(); i++) {
+        for (size_t j = 0; j < m_level.cols(); j++) {
+            Cell cell = maze[i][j];
+
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD) {
+                cout << Level::render[Cell::cell_e::DEATH_SNAKE_HEAD];
+            }
+            else if (cell.type() == Cell::cell_e::SNAKE_BODY) {
+                cout << Level::render[Cell::cell_e::DEATH_SNAKE_BODY];
+            }
+            else {
+                cout << Level::render[cell.type()];
+            }
         }
 
         cout << endl;
