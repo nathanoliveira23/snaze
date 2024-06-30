@@ -39,6 +39,11 @@ int read_file(const std::string &path, std::vector<vector<char>> &maze)
     return READ_OK;
 }
 
+inline void clear_screen() 
+{
+    cout << "\033[2J\033[1;1H";
+}
+
 int main(int argc, char* argv[])
 {
     RunningOpt runOpt;
@@ -52,9 +57,9 @@ int main(int argc, char* argv[])
     while (not snaze.game_over()) {
         snaze.process_events();
         snaze.update();
-        system("clear");
+        clear_screen();
         snaze.render();
-        usleep(70000);
+        usleep(50000);
     }
 
     return EXIT_SUCCESS;

@@ -137,6 +137,9 @@ void SnakeGame::render()
         if (m_match_state == match_e::LOOKING_FOR_FOOD) {
             cout << m_level.to_string();
         }
+        else if (m_match_state == match_e::STARTING) {
+            cout << m_level.to_string();
+        }
         else if (m_match_state == match_e::WALK_TO_DEATH) {
             cout << m_level.to_string();
         }
