@@ -90,11 +90,9 @@ void Level::update(const Position &pos, dir_e direction, bool ate_food)
     }
     else {
         Position next = move_to(pos, direction);
-        Position cell_to_free = m_snake.body().front();
 
-        fill(cell_to_free, Cell::cell_e::FREE);
-
-        m_snake.move(next);
+        Position old_tail = m_snake.move(next);
+        fill(old_tail, Cell::cell_e::FREE);
 
         if (m_snake.size() > 1) {
             for (const Position &p : m_snake.body()) {

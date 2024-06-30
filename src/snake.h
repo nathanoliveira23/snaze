@@ -14,7 +14,7 @@ public:
     Snake(const Position &pos);
 
     void grow(const Position &pos);
-    void move(const Position &pos);
+    Position move(const Position &pos);
     size_t size() const { return m_snake.size(); }
     std::deque<Position> body() const { return m_snake; }
 
