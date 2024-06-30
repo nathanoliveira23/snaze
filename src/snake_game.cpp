@@ -108,7 +108,15 @@ void SnakeGame::update()
                 m_score - 20 < 0 ? m_score = 0 
                                  : m_score -= 20;
                 m_curr_lives -= 1;
-                m_system_msg = "Press <ENTER> to try again.";
+
+                if (m_curr_lives == 0) {
+                    m_end_game = true;
+                    m_system_msg = "Sorry! Anaconda LOST.";
+                }
+                else {
+                    m_system_msg = "Press <ENTER> to try again.";
+                }
+
                 m_match_state = match_e::RESET;
             }
             
