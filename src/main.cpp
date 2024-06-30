@@ -41,9 +41,9 @@ int read_file(const std::string &path, std::vector<vector<char>> &maze)
     return READ_OK;
 }
 
-inline void clear_screen() 
+inline void refresh() 
 {
-    cout << "\033[2J\033[1;1H";
+    cout << "\033[2J\033[H";
 }
 
 int main(int argc, char* argv[])
@@ -64,7 +64,7 @@ int main(int argc, char* argv[])
     while (not snaze.game_over()) {
         snaze.process_events();
         snaze.update();
-        clear_screen();
+        refresh();
         snaze.render();
         usleep(50000);
     }
