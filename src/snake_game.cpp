@@ -237,11 +237,18 @@ void SnakeGame::display_life(count_t curr_lives) {
 void SnakeGame::display_won_message() const
 {
     auto maze = m_level.maze();
+    string maze_ascii = m_level.to_string();
+
+    const char* head = "v^><";
+    size_t idx = maze_ascii.find_first_of(head);
 
     for (size_t i = 0; i < (m_level.rows() / 2) - 2; i++) {
         for (size_t j = 0; j < m_level.cols(); j++) {
             Cell cell = maze[i][j];
-            cout << Level::render[cell.type()];
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD)
+                cout << maze_ascii[idx];
+            else
+                cout << Level::render[cell.type()];
         }
 
         cout << endl;
@@ -254,7 +261,10 @@ void SnakeGame::display_won_message() const
     for (size_t i = (m_level.rows() / 2) + 2; i < m_level.rows(); i++) {
         for (size_t j = 0; j < m_level.cols(); j++) {
             Cell cell = maze[i][j];
-            cout << Level::render[cell.type()];
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD)
+                cout << maze_ascii[idx];
+            else
+                cout << Level::render[cell.type()];
         }
 
         cout << endl;

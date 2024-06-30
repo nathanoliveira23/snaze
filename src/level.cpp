@@ -76,6 +76,8 @@ void Level::insert_snake(const Position &pos)
 
 void Level::update(const Position &pos, dir_e direction, bool ate_food)
 {
+    m_snake.direction(direction);
+
     if (ate_food) {
         Position tail;
         if (m_snake.size() == 1) {
@@ -227,7 +229,19 @@ std::string Level::to_string() const
     for (coord_t r = 0; r < rows(); ++r) {
         for (coord_t c = 0; c < cols(); ++c) {
             Cell cell = m_maze[r][c];
-            oss << Level::render[cell.type()];
+
+            if (cell.type() == Cell::cell_e::SNAKE_HEAD) {
+                switch (m_snake.direction()) {
+                    case UP:    oss << "v"; break;
+                    case DOWN:  oss << "^"; break;
+                    case LEFT:  oss << ">"; break;
+                    case RIGHT: oss << "<"; break;
+                    default:    oss << " ";
+                }
+            }
+            else {
+                oss << Level::render[cell.type()];
+            }
         }
         oss << "\n";
     }
