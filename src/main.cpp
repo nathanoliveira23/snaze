@@ -5,6 +5,8 @@
 #include <string>
 #include <limits>
 #include <unistd.h>
+#include <chrono>
+#include <thread>
 #include "common.h"
 #include "snake_game.h"
 #include "cmd_parse.h"
@@ -46,6 +48,14 @@ inline void refresh()
     cout << "\033[2J\033[H";
 }
 
+inline void wait(size_t time) 
+{
+    constexpr size_t second = 1000;
+    size_t t = second / time;
+
+    std::this_thread::sleep_for(std::chrono::milliseconds(t));
+}
+
 int main(int argc, char* argv[])
 {
     if (argc == 1 or !strcmp(argv[1], "--help")) {
@@ -66,7 +76,7 @@ int main(int argc, char* argv[])
         snaze.update();
         refresh();
         snaze.render();
-        usleep(50000);
+        wait(snaze.fps());
     }
 
     return EXIT_SUCCESS;

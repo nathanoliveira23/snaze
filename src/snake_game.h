@@ -49,6 +49,8 @@ public:
     void render();
     bool game_over() const;
 
+    count_t fps() const { return m_fps; }
+
 private:
     void display_welcome() const;
     void display_game_info() const;
