@@ -127,27 +127,26 @@ void Level::reset()
 
 bool Level::is_blocked(const Position &pos, dir_e dir) const
 {
+    size_t r = pos.row, c = pos.col;
+    Cell cell;
+
     switch (dir) {
         case UP:
-            return pos.row > 0 and
-                (m_maze[pos.row - 1][pos.col].type() == Cell::cell_e::WALL or
-                 m_maze[pos.row - 1][pos.col].type() == Cell::cell_e::INV_WALL or
-                 m_maze[pos.row - 1][pos.col].type() == Cell::cell_e::SNAKE_BODY);
+            r = r - 1;
+            cell = m_maze[r][c];
+            return pos.row > 0 and cell.type() != Cell::cell_e::FREE and cell.type() != Cell::cell_e::FOOD;
         case DOWN:
-            return pos.row < m_rows and
-                (m_maze[pos.row + 1][pos.col].type() == Cell::cell_e::WALL or
-                 m_maze[pos.row + 1][pos.col].type() == Cell::cell_e::INV_WALL or
-                 m_maze[pos.row + 1][pos.col].type() == Cell::cell_e::SNAKE_BODY);
+            r = r + 1;
+            cell = m_maze[r][c];
+            return pos.row < m_rows and cell.type() != Cell::cell_e::FREE and cell.type() != Cell::cell_e::FOOD;
         case LEFT:
-            return pos.col > 0 and
-                (m_maze[pos.row][pos.col - 1].type() == Cell::cell_e::WALL or
-                 m_maze[pos.row][pos.col - 1].type() == Cell::cell_e::INV_WALL or
-                 m_maze[pos.row][pos.col - 1].type() == Cell::cell_e::SNAKE_BODY);
+            c = c - 1;
+            cell = m_maze[r][c];
+            return pos.col > 0 and cell.type() != Cell::cell_e::FREE and cell.type() != Cell::cell_e::FOOD;
         case RIGHT:
-            return pos.col < m_cols and
-                (m_maze[pos.row][pos.col + 1].type() == Cell::cell_e::WALL or
-                 m_maze[pos.row][pos.col + 1].type() == Cell::cell_e::INV_WALL or
-                 m_maze[pos.row][pos.col + 1].type() == Cell::cell_e::SNAKE_BODY);
+            c = c + 1;
+            cell = m_maze[r][c];
+            return pos.col < m_cols and cell.type() != Cell::cell_e::FREE and cell.type() != Cell::cell_e::FOOD;
     }
 
     return false;
