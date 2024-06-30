@@ -3,6 +3,7 @@
 #include <sstream>
 #include "level.h"
 #include <iostream>
+#include <stdexcept>
 #include "cell.h"
 #include "common.h"
 #include "snake.h"
@@ -43,13 +44,21 @@ Level::Level(const std::vector<std::vector<char>> &input)
 
         for (size_t c = 0; c < m_cols; ++c) {
             char cell = input[r][c];
-            buff.push_back(Cell(map[cell]));
 
-            if (map[cell] == Cell::cell_e::SPAWN) {
-                m_snake_spawn = Position(r, c);
-                m_snake = Snake(Position(r, c));
+            if (map.find(cell) != map.end()) {
+                buff.push_back(Cell(map[cell]));
 
-                buff[c] = Cell::cell_e::SPAWN;
+                if (map[cell] == Cell::cell_e::SPAWN) {
+                    m_snake_spawn = Position(r, c);
+                    m_snake = Snake(Position(r, c));
+
+                    buff[c] = Cell::cell_e::SPAWN;
+                }
+            }
+            else {
+                std::stringstream error_msg;
+                error_msg << "Invalid character: \'" << cell << "\'.\n";
+                throw std::invalid_argument(error_msg.str());
             }
         }
 
