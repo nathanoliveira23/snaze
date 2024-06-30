@@ -1,4 +1,5 @@
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -6,6 +7,7 @@
 #include <unistd.h>
 #include "common.h"
 #include "snake_game.h"
+#include "cmd_parse.h"
 
 #define READ_OK 0
 #define READ_FAILED 1
@@ -46,10 +48,15 @@ inline void clear_screen()
 
 int main(int argc, char* argv[])
 {
-    RunningOpt runOpt;
+    if (argc == 1 or !strcmp(argv[1], "--help")) {
+        usage();
+        return EXIT_SUCCESS;
+    }
+
+    RunningOpt runOpt = parse_cmd(argc, argv);
     std::vector<vector<char>> level;
 
-    int read = read_file(argv[1], level);
+    int read = read_file(runOpt.level_path, level);
 
     snaze::SnakeGame snaze(runOpt);
     snaze.initialize(level);

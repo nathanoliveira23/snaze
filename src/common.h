@@ -33,6 +33,7 @@ enum player_e {
 };
 
 struct RunningOpt {
+    std::string level_path; //!< Path to a level.
     unsigned fps = 2;       //!< Default fps value.
     unsigned lives = 5;     //!< Default # of lives the snake shall have.
     unsigned foods = 10;    //!< Default # of food pellets for the entire simulation.
