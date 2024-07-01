@@ -17,7 +17,7 @@ Este projeto consiste em um jogo da forca versão CLI na qual, a partir de um ar
 
 - Com Cmake:
 ```
-cmake -S source -B build
+cmake -S . -B build
 cmake --build build
 ```
 
