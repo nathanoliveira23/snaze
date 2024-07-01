@@ -4,6 +4,7 @@
 #include <set>
 #include <string>
 #include "cmd_parse.h"
+#include "common.h"
 
 namespace fs = std::filesystem;
 
@@ -22,7 +23,7 @@ RunningOpt parse_cmd(int argc, char* argv[])
 {
     RunningOpt runOpt; 
 
-    std::set<std::string> flags { "--fps", "--lives", "--food" };
+    std::set<std::string> flags { "--fps", "--lives", "--food", "--playertype" };
 
     // Checks if there is any invalid option in the input.
     for (int arg = 0; arg < argc; ++arg) {
@@ -54,6 +55,14 @@ RunningOpt parse_cmd(int argc, char* argv[])
         }
         else if (!strcmp(argv[arg], "--food")) {
             runOpt.foods = std::stoi(argv[arg + 1]);
+        }
+        else if (!strcmp(argv[arg], "--playertype")) {
+            if (!strcmp(argv[arg + 1], "backtracking"))
+                runOpt.player_type = player_e::BACKTRACKING;
+            else if (!strcmp(argv[arg + 1], "random"))
+                runOpt.player_type = player_e::RANDOM;
+            else
+                runOpt.player_type = player_e::BACKTRACKING; // Keeps the default value.
         }
     }
 
