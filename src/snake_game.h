@@ -47,12 +47,11 @@ public:
     //!< The match states.
     enum class match_e : short {
         STARTING = 0,       //!< Begin new game.
-        FOUND_FOOD,         //!< The snake found the food.
         WALK_TO_DEATH,      //!< The snake is trapped in the maze.
         LOOKING_FOR_FOOD,   //!< The snake searches for food in the maze.
         RESET,              //!< Reset the level.
         WIN,                //!< Match ended and snake won.
-        GAME_OVER,          //!< Match ended and snake lost.
+        LOST,               //!< Match ended and snake lost.
     };
 
     /// Default constructor.
