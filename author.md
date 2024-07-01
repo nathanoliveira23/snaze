@@ -1,6 +1,6 @@
 # Introduction
 
-Este projeto consiste em um jogo da forca versão CLI na qual, a partir de um arquivo .csv contendo várias palavras e suas categorias, essas palavras são sorteadas de acordo com o nível de dificuldade escolhida para a partida. Esse jogo foi desenvolvido utilizando Game Loop como padrão de projeto.
+Este projeto consiste em uma versão CLI do classico Snake Game. Entretanto, a cobra, personagem do jogo, é controlado por uma AI engine que decide o menor caminho desde sua origem até a comida. Para isso, utiliza-se algoritmos de busca como, por exemplo, a busca em largura (BFS).
 
 # Author(s)
 
