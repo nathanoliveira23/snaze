@@ -240,6 +240,8 @@ void SnakeGame::render()
         }
     }
     else if (m_game_state == state_e::ENDING) {
+        draw_horizontal_line();
+        display_match_info();
         if (m_match_state == match_e::WIN)
             display_won_message();
         else if (m_match_state == match_e::LOST)
