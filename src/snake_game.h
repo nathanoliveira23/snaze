@@ -15,6 +15,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <list>
 #include <queue>
 
 #include "common.h"
@@ -25,6 +26,7 @@ using std::string;
 using std::vector;
 using std::pair;
 using std::queue;
+using std::list;
 using std::cout, std::endl;
 
 namespace snaze {
@@ -49,6 +51,7 @@ public:
         STARTING = 0,       //!< Begin new game.
         WALK_TO_DEATH,      //!< The snake is trapped in the maze.
         LOOKING_FOR_FOOD,   //!< The snake searches for food in the maze.
+        NEXT_LEVEL,         //!< The next level when the player won the previous one.
         RESET,              //!< Reset the level.
         WIN,                //!< Match ended and snake won.
         LOST,               //!< Match ended and snake lost.
@@ -63,7 +66,7 @@ public:
 
     //=== Common methods for the Game Loop design pattern.
     /// Defines simulation settings.
-    void initialize(const std::vector<std::vector<char>>&);
+    void initialize(const list<vector<vector<char>>>&);
     /// Process user input events, depending on the current game state.
     void process_events();
     /// Update the game based on the current game state.
@@ -102,7 +105,8 @@ private:
 
     state_e m_game_state;   //!< The current game state.
     match_e m_match_state;  //!< The current match state.
-    Level m_level;          //!< The maze.
+    list<Level> m_levels;   //!< A list of mazes.
+    Level m_level;          //!< The  current maze.
     Player m_player;        //!< The AI engine.
 
     string m_system_msg;    //!< Current system message displayed to user.

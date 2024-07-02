@@ -35,19 +35,25 @@ SnakeGame::SnakeGame(const RunningOpt& opt)
  * 
  * @param maze The maze configuration represented as a vector of vectors of characters.
  */
-void SnakeGame::initialize(const vector<vector<char>> &maze)
+void SnakeGame::initialize(const list<vector<vector<char>>> &maze)
 {
-    m_level = Level(maze);
-    m_player = Player(m_level);
+    // Store all levels.
+    for (const auto &m : maze) {
+        Level level(m);
+        m_levels.push_back(level);
+    }
+
+    m_level = Level(m_levels.front()); // Initialize the current level.
     m_game_state = state_e::STARTING;
 
     m_curr_foods = 0;                // Initialize current number of foods eaten.
     m_curr_lives = m_lives;          // Initialize current number of lives remaining.
     m_score = 0;                     // Initialize game score.
-    m_n_levels = 1;                  // Initialize the number of levels.
+    m_n_levels = m_levels.size();    // Initialize the number of levels.
     m_curr_foods = 0;                // Initialize the current number of foods.
     m_end_game = false;              // Initialize the end game flag.
 
+    m_levels.pop_front();
     m_system_msg = "Press <ENTER> to start the game!";
 }
 
@@ -63,7 +69,7 @@ void SnakeGame::process_events()
         read_enter();
     }
     else if (m_game_state == state_e::RUNNING) {
-        if (m_match_state == match_e::RESET or m_match_state == match_e::WIN or m_match_state == match_e::LOST) {
+        if (m_match_state == match_e::RESET or m_match_state == match_e::WIN or m_match_state == match_e::LOST or m_match_state == match_e::NEXT_LEVEL) {
             read_enter();
         }
     }
@@ -143,10 +149,15 @@ void SnakeGame::update()
 
                 // Check if all food has been eaten to win the game.
                 if (m_curr_foods == m_total_foods) {
-                    m_match_state = match_e::WIN;
-                    //m_end_game = true;
+                    if (m_levels.empty()) {
+                        m_match_state = match_e::WIN;
+                        m_system_msg = "Press <ENTER> to continue...";
+                    }
+                    else {
+                        m_match_state = match_e::NEXT_LEVEL;
+                        m_system_msg = "Press <ENTER> to start next level!";
 
-                    m_system_msg = "Press <ENTER> to continue...";
+                    }
                 }
             }
         }
@@ -172,8 +183,6 @@ void SnakeGame::update()
 
                 // Check if there are no lives left.
                 if (m_curr_lives == 0) {
-                    // End the game if no lives left.
-                    //m_end_game = true;
                     m_match_state = match_e::LOST;
                     m_system_msg = "Press <ENTER> to continue...";
                     return;
@@ -186,6 +195,12 @@ void SnakeGame::update()
                 // Reset the game state.
                 m_match_state = match_e::RESET;
             }
+        }
+        else if (m_match_state == match_e::NEXT_LEVEL) {
+            m_level = m_levels.front();
+            m_levels.pop_front();
+            m_curr_foods = 0;
+            m_match_state = match_e::STARTING;
         }
         else if (m_match_state == match_e::RESET) {
             m_level.reset();
@@ -224,6 +239,10 @@ void SnakeGame::render()
             cout << m_level.to_string();
         }
         else if (m_match_state == match_e::WALK_TO_DEATH) {
+            cout << m_level.to_string();
+        }
+        else if (m_match_state == match_e::NEXT_LEVEL) {
+            display_system_messages();
             cout << m_level.to_string();
         }
         else if (m_match_state == match_e::RESET) {

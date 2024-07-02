@@ -10,6 +10,7 @@
  * @author  Ronald Nathan Silva de Oliveira
  */
 
+#include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <fstream>
@@ -19,6 +20,7 @@
 #include <unistd.h>
 #include <chrono>
 #include <thread>
+#include <list>
 #include "common.h"
 #include "snake_game.h"
 #include "cmd_parse.h"
@@ -26,45 +28,53 @@
 #define READ_OK 0
 #define READ_FAILED 1
 
+using maze = std::vector<std::vector<char>>;
+
 /**
- * @brief Reads maze configuration from a file.
- * 
- * This function reads a maze configuration from the specified file path.
- * The maze is expected to be formatted with the first line containing the number of rows
- * and columns, followed by the maze grid itself. Each character in the grid represents
- * a type of cell in the maze.
- * 
- * @param path The file path to read the maze configuration from.
- * @param maze Output parameter where the maze configuration will be stored.
- *             Each vector represents a row in the maze grid.
- * 
- * @return int Returns READ_OK (0) if the maze is read successfully, or READ_FAILED (1) if there
- *             was an error reading the file.
+ * @brief Reads mazes from a file and stores them in a list.
+ *
+ * This function reads a file containing multiple mazes, each defined by
+ * its number of rows and columns followed by the maze layout. Each maze is
+ * stored as a vector of vectors of characters, representing the grid layout.
+ * The function stores these mazes in a list.
+ *
+ * @param path The path to the input file containing maze definitions.
+ * @param mazes A reference to a list where the read mazes will be stored.
+ * @return READ_OK if the file is read successfully, READ_FAILED otherwise.
  */
-int read_file(const std::string &path, std::vector<std::vector<char>> &maze)
+int read_file(const std::string &path, std::list<maze> &mazes)
 {
     std::ifstream fin(path);
 
-    if (!fin.is_open()) return READ_FAILED; // Unable to open file.
+    if (not fin.is_open()) return READ_FAILED; // Unable to open file.
 
-    size_t rows, cols;
-    fin >> rows >> cols; // Read number of rows and columns.
+    while (true) {
+        size_t rows, cols;
+        if (not (fin >> rows >> cols)) {
+            if (fin.eof()) break;   // End of file reached.
 
-    fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore rest of the first line.
-
-    std::string line;
-    for (size_t r = 0; r < rows; ++r) {
-        std::vector<char> buff;
-
-        if (std::getline(fin, line)) { // Read each line of the maze.
-            for (const char &c : line) {
-                buff.push_back(c); // Store each character in the row vector.
-            }
-            maze.push_back(buff); // Store the row vector in the maze.
-        } 
-        else {
-            return READ_FAILED; // Error reading line.
+            return READ_FAILED;     // Error reading dimensions.
         }
+
+        fin.ignore(std::numeric_limits<std::streamsize>::max(), '\n'); // Ignore rest of the first line.
+
+        std::string line;
+        maze maze;
+        for (size_t r = 0; r < rows; ++r) {
+            std::vector<char> buff;
+
+            if (std::getline(fin, line)) { // Read each line of the maze.
+                for (const char &c : line) {
+                    buff.push_back(c); // Store each character in the row vector.
+                }
+                maze.push_back(buff); // Store the row vector in the maze.
+            } 
+            else {
+                return READ_FAILED; // Error reading line.
+            }
+        }
+
+        mazes.push_back(maze);
     }
 
     return READ_OK; // Successfully read maze.
@@ -106,12 +116,17 @@ int main(int argc, char* argv[])
 
     RunningOpt runOpt = parse_cmd(argc, argv);
 
-    std::vector<vector<char>> level;
+    std::list<maze> levels;
 
-    int read = read_file(runOpt.level_path, level);
+    int read = read_file(runOpt.level_path, levels);
+
+    if (read == READ_FAILED) {
+        std::cerr << "Unable to read file: " << strerror(errno) << ".\n";
+        return EXIT_FAILURE;
+    }
 
     snaze::SnakeGame snaze(runOpt);
-    snaze.initialize(level);
+    snaze.initialize(levels);
 
     while (not snaze.game_over()) {
         snaze.process_events();
