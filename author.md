@@ -10,7 +10,7 @@ Este projeto consiste em uma versão CLI do classico Snake Game. Entretanto, a c
 
 # Problems found or limitations
 
-- Encontrar o caminho a cada nova posição;
+- Em alguns casos, em determinado estado do labirinto, ao obter o caminho minimo o corpo da cobra pode estar bloqueando sua passagem. Devido a isso a cobra morre no meio do caminho sem haver colisão.
 - Atualização de tela sem flickering.
 
 # Compiling and Runnig
