@@ -125,7 +125,7 @@ optional<RunningOpt> parse_cmd(int argc, char* argv[])
                 }
             }
             else {
-                show_error("Missing arguments for --foods.");
+                show_error("Missing arguments for --playertype.");
                 return nullopt;
             }
         }

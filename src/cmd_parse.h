@@ -26,9 +26,9 @@ static const set<string> flags { "--fps", "--lives", "--food", "--playertype" };
 /// Prints usage information for the snaze game simulation.
 void usage();
 /// Attempts to convert strings provided by the command line to a positive integer.
-optional<unsigned> try_parse_int(std::string, void(*callback)(const std::string &));
+optional<unsigned> try_parse_int(string, void(*callback)(const string &));
 /// Displays an error message prefixed with "snaze: " on the standard error stream.
-void show_error(const std::string &);
+void show_error(const string &);
 ///Parses command line arguments to configure the snaze game simulation.
 optional<RunningOpt> parse_cmd(int argc, char* argv[]);
 
