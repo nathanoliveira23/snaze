@@ -1,6 +1,7 @@
 #include <cstdlib>
 #include <filesystem>
 #include <cstring>
+#include <optional>
 #include <stdexcept>
 
 #include "cmd_parse.h"
@@ -47,7 +48,7 @@ void show_error(const std::string &err)
  * @param argv Array of command line argument strings.
  * @return A `RunningOpt` struct containing parsed options for running the simulation.
  */
-RunningOpt parse_cmd(int argc, char* argv[])
+optional<RunningOpt> parse_cmd(int argc, char* argv[])
 {
     RunningOpt runOpt; 
 
@@ -58,8 +59,7 @@ RunningOpt parse_cmd(int argc, char* argv[])
         if (flag.find("--") != std::string::npos) {
             if (flags.find(flag) == flags.end()) {
                 show_error("unrecognized command line option.");
-                usage();
-                exit(EXIT_FAILURE);
+                return nullopt;
             }
         }
     }
@@ -76,12 +76,11 @@ RunningOpt parse_cmd(int argc, char* argv[])
                 if (fps.has_value())
                     runOpt.fps = fps.value();
                 else
-                    exit(EXIT_FAILURE);
+                    return nullopt;
             }
             else {
                 show_error("Missing arguments for --fps.");
-                usage();
-                exit(EXIT_FAILURE);
+                return nullopt;
             }
         }
         else if (!strcmp(argv[arg], "--lives")) {
@@ -91,12 +90,11 @@ RunningOpt parse_cmd(int argc, char* argv[])
                 if (lives.has_value())
                     runOpt.lives = lives.value();
                 else
-                    exit(EXIT_FAILURE);
+                    return nullopt;
             }
             else {
                 show_error("Missing arguments for --lives.");
-                usage();
-                exit(EXIT_FAILURE);
+                return nullopt;
             }
         }
         else if (!strcmp(argv[arg], "--food")) {
@@ -104,14 +102,13 @@ RunningOpt parse_cmd(int argc, char* argv[])
                 auto foods = try_parse_int(argv[arg + 1], show_error);
 
                 if (foods.has_value())
-                    runOpt.fps = foods.value();
+                    runOpt.foods = foods.value();
                 else
-                    exit(EXIT_FAILURE);
+                    return nullopt;
             }
             else {
                 show_error("Missing arguments for --food.");
-                usage();
-                exit(EXIT_FAILURE);
+                return nullopt;
             }
         }
         else if (!strcmp(argv[arg], "--playertype")) {
@@ -124,13 +121,12 @@ RunningOpt parse_cmd(int argc, char* argv[])
                 }
                 else {
                     show_error("\'" + std::string(argv[arg+1]) + "\' is not a valid argument.");
-                    usage();
-                    exit(EXIT_FAILURE);
+                    return nullopt;
                 }
             }
             else {
                 show_error("Missing arguments for --foods.");
-                exit(EXIT_FAILURE);
+                return nullopt;
             }
         }
     }

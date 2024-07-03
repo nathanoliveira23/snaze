@@ -114,7 +114,16 @@ int main(int argc, char* argv[])
         return EXIT_SUCCESS;
     }
 
-    RunningOpt runOpt = parse_cmd(argc, argv);
+    RunningOpt runOpt;
+    auto result = parse_cmd(argc, argv);
+
+    if (result.has_value()) {
+        runOpt = result.value();
+    }
+    else {
+        usage();
+        return EXIT_FAILURE;
+    }
 
     std::list<maze> levels;
 

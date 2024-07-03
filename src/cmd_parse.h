@@ -30,6 +30,6 @@ optional<unsigned> try_parse_int(std::string, void(*callback)(const std::string 
 /// Displays an error message prefixed with "snaze: " on the standard error stream.
 void show_error(const std::string &);
 ///Parses command line arguments to configure the snaze game simulation.
-RunningOpt parse_cmd(int argc, char* argv[]);
+optional<RunningOpt> parse_cmd(int argc, char* argv[]);
 
 #endif
