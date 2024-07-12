@@ -77,6 +77,8 @@ int read_file(const std::string &path, std::list<maze> &mazes)
         mazes.push_back(maze);
     }
 
+    fin.close();
+
     return READ_OK; // Successfully read maze.
 }
 
