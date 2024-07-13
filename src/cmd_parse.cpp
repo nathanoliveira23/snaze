@@ -58,7 +58,9 @@ optional<RunningOpt> parse_cmd(int argc, char* argv[])
 
         if (flag.find("--") != std::string::npos) {
             if (flags.find(flag) == flags.end()) {
-                show_error("unrecognized command line option.");
+                string msg = "unrecognized command line option: \'" + flag + "\'.";
+                show_error(msg);
+
                 return nullopt;
             }
         }
