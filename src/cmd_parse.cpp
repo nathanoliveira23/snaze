@@ -39,6 +39,36 @@ void show_error(const std::string &err)
 }
 
 /**
+ * @brief Checks the command line arguments for recognized flags.
+ *
+ * This function iterates through the command line arguments provided,
+ * starting from the second argument (index 1). It looks for arguments
+ * that are formatted as flags (starting with "--"). If a flag is not
+ * recognized, it shows an error message and returns false.
+ *
+ * @param argc The number of command line arguments.
+ * @param argv An array of pointers to the command line arguments.
+ * @return True if all flags are recognized, false otherwise.
+ */
+bool check_args(int argc, char* argv[])
+{
+    for (int arg = 1; arg < argc; ++arg) {
+        std::string flag = argv[arg];
+
+        if (flag.find("--") != std::string::npos) {
+            if (flags.find(flag) == flags.end()) {
+                string msg = "unrecognized command line option: \'" + flag + "\'.";
+                show_error(msg);
+
+                return false;
+            }
+        }
+    }
+
+    return true;
+}
+
+/**
  * @brief Parses command line arguments to configure the snaze game simulation.
  * 
  * Parses command line arguments to extract and configure options for the snaze game simulation,
@@ -53,17 +83,8 @@ optional<RunningOpt> parse_cmd(int argc, char* argv[])
     RunningOpt runOpt; 
 
     // Check for unrecognized command line options.
-    for (int arg = 1; arg < argc; ++arg) {
-        std::string flag = argv[arg];
-
-        if (flag.find("--") != std::string::npos) {
-            if (flags.find(flag) == flags.end()) {
-                string msg = "unrecognized command line option: \'" + flag + "\'.";
-                show_error(msg);
-
-                return nullopt;
-            }
-        }
+    if (not check_args(argc, argv)) {
+        return nullopt;
     }
 
     // Parse command line arguments to set simulation options.
@@ -151,7 +172,8 @@ optional<RunningOpt> parse_cmd(int argc, char* argv[])
  * @throws std::invalid_argument If the string cannot be converted to an `unsigned` integer.
  * @throws std::out_of_range If the converted value is out of the range of `unsigned`.
  */
-optional<unsigned> try_parse_int(std::string str, void (*callback)(const std::string &))
+optional<unsigned> 
+try_parse_int(std::string str, void (*callback)(const std::string &))
 {
     unsigned result; // Variable to hold the converted unsigned integer.
     

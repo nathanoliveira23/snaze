@@ -27,6 +27,8 @@ static const set<string> flags { "--fps", "--lives", "--food", "--playertype" };
 void usage();
 /// Attempts to convert strings provided by the command line to a positive integer.
 optional<unsigned> try_parse_int(string, void(*callback)(const string &));
+/// Checks if command line options are valid.
+bool check_args(int argc, char **argv);
 /// Displays an error message prefixed with "snaze: " on the standard error stream.
 void show_error(const string &);
 ///Parses command line arguments to configure the snaze game simulation.
